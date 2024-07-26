@@ -348,6 +348,9 @@ const pieces = [
 const whitePieces = [
   pawnWhite, bishopWhite, knightWhite, rookWhite, kingWhite, queenWhite
 ]
+const blackPieces = [
+  pawnBlack, bishopBlack, knightBlack, rookBlack, kingBlack, queenBlack
+]
 
 setSolids([])
 
@@ -404,29 +407,145 @@ function drawMoves(x, y) {
   })
 
   if (piece.type == pawnWhite) {
-    let white = piece.x % 2 == 1
+    let white = (piece.x % 2) + ((piece.y + 1) % 2) == 1
     if (piece.y == 0) {
       return
     }
-    if (piece.y == 6) {
-      addSprite(piece.x, 5, white ? whiteSelected : blackSelected)
-      addSprite(piece.x, 4, white ? blackSelected : whiteSelected)
-    } else {
+    let enemies = getTile(piece.x - 1, piece.y - 1).concat(getTile(piece.x + 1, piece.y - 1))
+    enemies.forEach((t) => {
+      if (blackPieces.indexOf(t.type) >= 0) {
+        let white = (t.x % 2) + ((t.y + 1) % 2) == 1
+        addSprite(t.x, t.y, white ? whiteSelected : blackSelected)
+      }
+    })
+    enemies = getTile(piece.x, piece.y - 1)
+    let allowMove = true
+    enemies.forEach((t) => {
+      if (pieces.indexOf(t.type) >= 0) {
+        allowMove = false
+      }
+    })
+    if (allowMove) {
       addSprite(piece.x, piece.y - 1, white ? whiteSelected : blackSelected)
     }
+    if (piece.y == 6 && allowMove) {
+      enemies = getTile(piece.x, piece.y - 2)
+      allowMove = true
+      enemies.forEach((t) => {
+        if (pieces.indexOf(t.type) >= 0) {
+          allowMove = false
+        }
+      })
+      if (allowMove) {
+        addSprite(piece.x, 4, white ? blackSelected : whiteSelected)
+      }
+    }
   } else if (piece.type == bishopWhite) {
+    let white = (piece.x % 2) + ((piece.y + 1) % 2) == 1
+    if (piece.y == 0) {
+      return
+    }
+    let select = white ? whiteSelected : blackSelected
     for (let x = 1; x < 8; x++) {
       if (piece.x + x < 8 && piece.y + x < 8) {
-        addSprite(x + piece.x, x + piece.y, whiteSelected)
+        let collision = false
+        if (x > 1) {
+          let removal = 0
+          for (; x > 0; x--) {
+            removal += 1
+            getTile(piece.x + x, piece.y + x).forEach((t) => {
+              if (pieces.indexOf(t.type) >= 0) {
+                collision = true
+              }
+            })
+          }
+          x += removal
+        }
+        if (!collision) {
+          getTile(piece.x + x, piece.y + x).forEach((t) => {
+            if (whitePieces.indexOf(t.type) >= 0) {
+              collision = true
+            }
+          })
+        }
+        if (!collision) {
+          addSprite(piece.x + x, piece.y + x, select)
+        }
       }
       if (piece.x + x < 8 && piece.y - x >= 0) {
-        addSprite(x + piece.x, piece.y - x, blackSelected)
+        let collision = false
+        if (x > 1) {
+          let removal = 0
+          for (; x > 0; x--) {
+            removal += 1
+            getTile(piece.x + x, piece.y - x).forEach((t) => {
+              if (pieces.indexOf(t.type) >= 0) {
+                collision = true
+              }
+            })
+          }
+          x += removal
+        }
+        if (!collision) {
+          getTile(piece.x + x, piece.y - x).forEach((t) => {
+            if (whitePieces.indexOf(t.type) >= 0) {
+              collision = true
+            }
+          })
+        }
+        if (!collision) {
+          addSprite(piece.x + x, piece.y - x, select)
+        }
       }
       if (piece.x - x >= 0 && piece.y + x < 8) {
-        addSprite(piece.x - x, piece.y + x, blackSelected)
+        let collision = false
+        if (x > 1) {
+          let removal = 0
+          for (; x > 0; x--) {
+            removal += 1
+            getTile(piece.x - x, piece.y + x).forEach((t) => {
+              if (pieces.indexOf(t.type) >= 0) {
+                collision = true
+              }
+            })
+          }
+          x += removal
+        }
+        if (!collision) {
+          getTile(piece.x - x, piece.y + x).forEach((t) => {
+            if (whitePieces.indexOf(t.type) >= 0) {
+              collision = true
+            }
+          })
+        }
+        if (!collision) {
+          addSprite(piece.x - x, piece.y + x, select)
+        }
       }
       if (piece.x - x >= 0 && piece.y - x >= 0) {
-        addSprite(piece.x - x, piece.y - x, blackSelected)
+        let collision = false
+        if (x > 1) {
+          let removal = 0
+          for (; x > 0; x--) {
+            removal += 1
+            getTile(piece.x - x, piece.y - x).forEach((t) => {
+              if (pieces.indexOf(t.type) >= 0) {
+                collision = true
+              }
+            })
+          }
+          x += removal
+        }
+        if (!collision) {
+          getTile(piece.x - x, piece.y - x).forEach((t) => {
+            if (whitePieces.indexOf(t.type) >= 0) {
+              collision = true
+            }
+          })
+        }
+        if (!collision) {
+          addSprite(piece.x - x, piece.y - x, select)
+        }
       }
     }
   }
