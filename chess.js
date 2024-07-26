@@ -406,6 +406,10 @@ function drawMoves(x, y) {
       }
   })
 
+  drawSelection(piece);
+}
+
+function drawSelection(piece) {
   if (piece.type == pawnWhite) {
     let white = (piece.x % 2) + ((piece.y + 1) % 2) == 1
     if (piece.y == 0) {
@@ -426,7 +430,7 @@ function drawMoves(x, y) {
       }
     })
     if (allowMove) {
-      addSprite(piece.x, piece.y - 1, white ? whiteSelected : blackSelected)
+      addSprite(piece.x, piece.y - 1, white ? blackSelected : whiteSelected)
     }
     if (piece.y == 6 && allowMove) {
       enemies = getTile(piece.x, piece.y - 2)
@@ -437,7 +441,7 @@ function drawMoves(x, y) {
         }
       })
       if (allowMove) {
-        addSprite(piece.x, 4, white ? blackSelected : whiteSelected)
+        addSprite(piece.x, 4, white ? whiteSelected : blackSelected)
       }
     }
   } else if (piece.type == bishopWhite) {
@@ -675,6 +679,37 @@ function drawMoves(x, y) {
       let select = white ? whiteSelected : blackSelected
       addSprite(piece.x, y, select);
     }
+  } else if (piece.type == queenWhite) {
+    drawSelection({ type: "j", x: piece.x, y: piece.y })
+    drawSelection({ type: "f", x: piece.x, y: piece.y })
+  } else if (piece.type == kingWhite) {
+    function draw(x, y, select) {
+      if (!(x < 8 && x >= 0 && y < 8 && y >= 0)) {
+        return
+      }
+      let ok = true
+      getTile(x, y).forEach((t) => {
+        if (whitePieces.indexOf(t.type) >= 0) {
+          ok = false
+        }
+      })
+
+      if (ok) {
+        addSprite(x, y, select)
+      }
+    }
+    
+    let white = (piece.x % 2) + ((piece.y + 1) % 2) == 1
+    let select = white ? whiteSelected : blackSelected
+    draw(piece.x + 1, piece.y + 1, select)
+    draw(piece.x - 1, piece.y - 1, select)
+    draw(piece.x + 1, piece.y - 1, select)
+    draw(piece.x - 1, piece.y + 1, select)
+    select = white ? blackSelected : whiteSelected
+    draw(piece.x + 1, piece.y, select)
+    draw(piece.x - 1, piece.y, select)
+    draw(piece.x, piece.y + 1, select)
+    draw(piece.x, piece.y - 1, select)
   }
 }
 
