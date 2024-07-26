@@ -8,18 +8,60 @@ https://sprig.hackclub.com/gallery/getting_started
 @addedOn: 2024-00-00
 */
 
-const pawnBlack = "a"
-const pawnWhite = "b"
-const bishopBlack = "c"
-const bishopWhite = "d"
-const knightBlack = "e"
-const knightWhite = "f"
-const rookBlack = "g"
-const rookWhite = "h"
+const cursor = "a"
+const cursorSelected = "b"
+const pawnBlack = "c"
+const pawnWhite = "d"
+const bishopBlack = "e"
+const bishopWhite = "f"
+const knightBlack = "g"
+const knightWhite = "h"
+const rookBlack = "i"
+const rookWhite = "j"
+const kingBlack = "k"
+const kingWhite = "l"
+const queenBlack = "m"
+const queenWhite = "n"
+const whiteSelected = "w"
+const blackSelected = "x"
 const whiteSquare = "y"
 const blackSquare = "z"
 
 setLegend(
+  [ cursor, bitmap`
+4444444444444444
+4DDDDDDDDDDDDDD4
+4D............D4
+4D............D4
+4D............D4
+4D............D4
+4D............D4
+4D............D4
+4D............D4
+4D............D4
+4D............D4
+4D............D4
+4D............D4
+4D............D4
+4DDDDDDDDDDDDDD4
+4444444444444444` ],
+  [ cursorSelected, bitmap`
+6666666666666666
+6FFFFFFFFFFFFFF6
+6F............F6
+6F............F6
+6F............F6
+6F............F6
+6F............F6
+6F............F6
+6F............F6
+6F............F6
+6F............F6
+6F............F6
+6F............F6
+6F............F6
+6FFFFFFFFFFFFFF6
+6666666666666666` ],
   [ pawnBlack, bitmap`
 ................
 ................
@@ -125,20 +167,139 @@ setLegend(
   [ rookBlack, bitmap`
 ................
 ................
-.0000.0000.0000.
-.0000.0000.0000.
-.0000.0000.0000.
-.00000000000000.
-.00000000000000.
-.00000000000000.
+....00..00.0....
+....01001100....
+....0111LLL0....
+....01LLLLL0....
 ....00000000....
-.....000000.....
-.....000000.....
-.....000000.....
-.....000000.....
-....00000LL0....
+.....011LL0.....
+.....011LL0.....
+.....01LLL0.....
+.....01LLL0.....
 ....00000000....
+....011LLLL0....
+....00000000....
+................
 ................` ],
+  [ rookWhite, bitmap`
+................
+................
+....00..00.0....
+....02002200....
+....02221110....
+....02111110....
+....00000000....
+.....022110.....
+.....022110.....
+.....021110.....
+.....021110.....
+....00000000....
+....02211110....
+....00000000....
+................
+................` ],
+  [ kingBlack, bitmap`
+................
+................
+.......00.......
+.......00.......
+.....0....0.....
+....010..010....
+....011001L0....
+....01L11LL0....
+....01LLLLL0....
+.....01LLL0.....
+.....01LLL0.....
+.....000000.....
+....011LLLL0....
+....00000000....
+................
+................` ],
+  [ kingWhite, bitmap`
+................
+................
+.......00.......
+.......00.......
+.....0....0.....
+....020..020....
+....02200210....
+....02122110....
+....02111110....
+.....021110.....
+.....021110.....
+.....000000.....
+....02211110....
+....00000000....
+................
+................` ],
+  [ queenBlack, bitmap`
+................
+................
+................
+.......00.......
+.....0.00.0.....
+.....0....0.....
+....00.00.00....
+....01011010....
+....011LL1L0....
+....01LLLLL0....
+.....01LLL0.....
+.....000000.....
+....011LLLL0....
+....00000000....
+................
+................` ],
+  [ queenWhite, bitmap`
+................
+................
+................
+.......00.......
+.....0.00.0.....
+.....0....0.....
+....00.00.00....
+....02022020....
+....02211210....
+....02111110....
+.....021110.....
+.....000000.....
+....02211110....
+....00000000....
+................
+................` ],
+  [ whiteSelected, bitmap`
+6666666666666666
+6666666666666666
+6666666666666666
+6666666666666666
+6666666666666666
+6666666666666666
+6666666666666666
+6666666666666666
+6666666666666666
+6666666666666666
+6666666666666666
+6666666666666666
+6666666666666666
+6666666666666666
+6666666666666666
+6666666666666666` ],
+  [ blackSelected, bitmap`
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF` ],
   [ whiteSquare, bitmap`
 2222222222222222
 2222222222222222
@@ -175,6 +336,19 @@ LLLLLLLLLLLLLLLL
 LLLLLLLLLLLLLLLL` ],
 )
 
+const pieces = [
+  pawnBlack, pawnWhite,
+  bishopBlack, bishopWhite,
+  knightBlack, knightWhite,
+  rookBlack, rookWhite,
+  kingBlack, kingWhite,
+  queenBlack, queenWhite
+]
+
+const whitePieces = [
+  pawnWhite, bishopWhite, knightWhite, rookWhite, kingWhite, queenWhite
+]
+
 setSolids([])
 
 const level = map`
@@ -204,7 +378,124 @@ function setup() {
   addSprite(6, 0, knightBlack)
   addSprite(1, 7, knightWhite)
   addSprite(6, 7, knightWhite)
+  // rooks
+  addSprite(0, 0, rookBlack)
+  addSprite(7, 0, rookBlack)
+  addSprite(0, 7, rookWhite)
+  addSprite(7, 7, rookWhite)
+  // king
+  addSprite(4, 0, kingBlack)
+  addSprite(4, 7, kingWhite)
+  // Queen
+  addSprite(3, 0, queenBlack)
+  addSprite(3, 7, queenWhite)
+
+  // cursor
+  addSprite(3, 5, cursor)
+}
+
+function drawMoves(x, y) {
+  let piece = getTile(x, y)
+  getTile(x, y).forEach((t) => {
+    if (whitePieces.indexOf(t.type) >= 0) {
+        piece = t
+        return
+      }
+  })
+
+  if (piece.type == pawnWhite) {
+    let white = piece.x % 2 == 1
+    if (piece.y == 0) {
+      return
+    }
+    if (piece.y == 6) {
+      addSprite(piece.x, 5, white ? whiteSelected : blackSelected)
+      addSprite(piece.x, 4, white ? blackSelected : whiteSelected)
+    } else {
+      addSprite(piece.x, piece.y - 1, white ? whiteSelected : blackSelected)
+    }
+  } else if (piece.type == bishopWhite) {
+    for (let x = 1; x < 8; x++) {
+      if (piece.x + x < 8 && piece.y + x < 8) {
+        addSprite(x + piece.x, x + piece.y, whiteSelected)
+      }
+      if (piece.x + x < 8 && piece.y - x >= 0) {
+        addSprite(x + piece.x, piece.y - x, blackSelected)
+      }
+      if (piece.x - x >= 0 && piece.y + x < 8) {
+        addSprite(piece.x - x, piece.y + x, blackSelected)
+      }
+      if (piece.x - x >= 0 && piece.y - x >= 0) {
+        addSprite(piece.x - x, piece.y - x, blackSelected)
+      }
+    }
+  }
 }
 
 setup()
 
+let c = getFirst(cursor)
+
+let selected = false
+
+onInput("w", () => {
+  c.y -= 1
+})
+onInput("a", () => {
+  c.x -= 1
+})
+onInput("s", () => {
+  c.y += 1
+})
+onInput("d", () => {
+  c.x += 1
+})
+
+onInput("j", () => {
+  if (!selected) {
+    let onPiece = false
+    getTile(c.x, c.y).forEach((t) => {
+      if (whitePieces.indexOf(t.type) >= 0) {
+        onPiece = true
+      }
+    })
+    if (onPiece) {
+      selected = true
+      addSprite(c.x, c.y, cursorSelected)
+      drawMoves(c.x, c.y)
+      //c = getFirst(cursorSelected)
+    }
+  } else {
+    let onMove = false
+    getTile(c.x, c.y).forEach((t) => {
+      if (t.type == whiteSelected || t.type == blackSelected) {
+        onMove = true
+      }
+    })
+    if (onMove) {
+      let piece
+      let sel = getFirst(cursorSelected)
+      getTile(sel.x, sel.y).forEach((t) => {
+        if (whitePieces.indexOf(t.type) >= 0) {
+          piece = t
+        }
+      })
+      piece.x = c.x
+      piece.y = c.y
+
+      getAll(whiteSelected).forEach((t) => t.remove())
+      getAll(blackSelected).forEach((t) => t.remove())
+      getFirst(cursorSelected).remove()
+      selected = false
+    }
+  }
+})
+
+onInput("k", () => {
+  if (selected) {
+    getAll(whiteSelected).forEach((t) => t.remove())
+    getAll(blackSelected).forEach((t) => t.remove())
+    getFirst(cursorSelected).remove()
+    selected = false
+  }
+})
