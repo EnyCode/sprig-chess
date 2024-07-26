@@ -442,15 +442,13 @@ function drawMoves(x, y) {
     }
   } else if (piece.type == bishopWhite) {
     let white = (piece.x % 2) + ((piece.y + 1) % 2) == 1
-    if (piece.y == 0) {
-      return
-    }
     let select = white ? whiteSelected : blackSelected
     for (let x = 1; x < 8; x++) {
       if (piece.x + x < 8 && piece.y + x < 8) {
         let collision = false
         if (x > 1) {
-          let removal = 0
+          let removal = 1
+          x -= 1
           for (; x > 0; x--) {
             removal += 1
             getTile(piece.x + x, piece.y + x).forEach((t) => {
@@ -475,7 +473,8 @@ function drawMoves(x, y) {
       if (piece.x + x < 8 && piece.y - x >= 0) {
         let collision = false
         if (x > 1) {
-          let removal = 0
+          let removal = 1
+          x -= 1
           for (; x > 0; x--) {
             removal += 1
             getTile(piece.x + x, piece.y - x).forEach((t) => {
@@ -483,6 +482,9 @@ function drawMoves(x, y) {
                 collision = true
               }
             })
+            if (piece.x == 3 && piece.y == 3) {
+              console.log(x, removal, collision, piece.x + x, piece.y - x)
+            }
           }
           x += removal
         }
@@ -500,7 +502,8 @@ function drawMoves(x, y) {
       if (piece.x - x >= 0 && piece.y + x < 8) {
         let collision = false
         if (x > 1) {
-          let removal = 0
+          let removal = 1
+          x -= 1
           for (; x > 0; x--) {
             removal += 1
             getTile(piece.x - x, piece.y + x).forEach((t) => {
@@ -525,7 +528,8 @@ function drawMoves(x, y) {
       if (piece.x - x >= 0 && piece.y - x >= 0) {
         let collision = false
         if (x > 1) {
-          let removal = 0
+          let removal = 1
+          x -= 1
           for (; x > 0; x--) {
             removal += 1
             getTile(piece.x - x, piece.y - x).forEach((t) => {
@@ -547,6 +551,129 @@ function drawMoves(x, y) {
           addSprite(piece.x - x, piece.y - x, select)
         }
       }
+    }
+  } else if (piece.type == knightWhite) {
+    function checkTarget(x, y) {
+      let ok = true
+      getTile(x, y).forEach((t) => {
+        if (whitePieces.indexOf(t.type) >= 0) {
+          ok = false
+        }
+      })
+      return ok
+    }
+    let white = (piece.x % 2) + ((piece.y + 1) % 2) == 1
+    let select = white ? blackSelected : whiteSelected
+    if (piece.x + 2 < 8) {
+      for (let x = 0; x < 2; x++) {
+        let y = (x == 0 ? 1 : -1) + piece.y
+        console.log(y)
+        if (y < 8 && y >= 0 && checkTarget(piece.x + 2, y)) {
+          console.log("placing")
+          addSprite(piece.x + 2, y, select)
+        }
+      }
+    }
+    if (piece.y + 2 < 8) {
+      for (let x = 0; x < 2; x++) {
+        let y = (x == 0 ? 1 : -1) + piece.x
+        if (y < 8 && y >= 0 && checkTarget(y, piece.y + 2)) {
+          addSprite(y, piece.y + 2, select)
+        }
+      }
+    }
+    if (piece.x - 2 >= 0) {
+      for (let x = 0; x < 2; x++) {
+        let y = (x == 0 ? 1 : -1) + piece.y
+        if (y < 8 && y >= 0 && checkTarget(piece.x - 2, y)) {
+          addSprite(piece.x - 2, y, select)
+        }
+      }
+    }
+    if (piece.y - 2 >= 0) {
+      for (let x = 0; x < 2; x++) {
+        let y = (x == 0 ? 1 : -1) + piece.x
+        if (y < 8 && y >= 0 && checkTarget(y, piece.y - 2)) {
+          addSprite(y, piece.y - 2, select)
+        }
+      }
+    }
+  } else if (piece.type == rookWhite) {
+    let toReturn = false;
+    for (let x = piece.x; x < 8; x++) {
+      if (toReturn) {
+        break;
+      }
+      if (x == piece.x) { continue }
+      let rtn = false;
+      getTile(x, piece.y).forEach((t) => {
+        if (blackPieces.indexOf(t.type) >= 0) {
+          toReturn = true;
+        } else if (whitePieces.indexOf(t.type) >= 0) {
+          rtn = true;
+        }
+      })
+      if (rtn) { break }
+      let white = (x % 2) + ((piece.y + 1) % 2) == 1
+      let select = white ? whiteSelected : blackSelected
+      addSprite(x, piece.y, select);
+    }
+    toReturn = false;
+    for (let x = piece.x; x >= 0; x--) {
+      if (toReturn) {
+        break;
+      }
+      if (x == piece.x) { continue }
+      let rtn = false;
+      getTile(x, piece.y).forEach((t) => {
+        if (blackPieces.indexOf(t.type) >= 0) {
+          toReturn = true;
+        } else if (whitePieces.indexOf(t.type) >= 0) {
+          rtn = true;
+        }
+      })
+      if (rtn) { break }
+      let white = (x % 2) + ((piece.y + 1) % 2) == 1
+      let select = white ? whiteSelected : blackSelected
+      addSprite(x, piece.y, select);
+    }
+    toReturn = false;
+    for (let y = piece.y; y < 8; y++) {
+      if (toReturn) {
+        break;
+      }
+      if (y == piece.y) { continue }
+      let rtn = false;
+      getTile(piece.x, y).forEach((t) => {
+        if (blackPieces.indexOf(t.type) >= 0) {
+          toReturn = true;
+        } else if (whitePieces.indexOf(t.type) >= 0) {
+          rtn = true;
+        }
+      })
+      if (rtn) { break }
+      let white = (piece.x % 2) + ((y + 1) % 2) == 1
+      let select = white ? whiteSelected : blackSelected
+      addSprite(piece.x, y, select);
+    }
+    toReturn = false;
+    for (let y = piece.y; y >= 0; y--) {
+      if (toReturn) {
+        break;
+      }
+      if (y == piece.y) { continue }
+      let rtn = false;
+      getTile(piece.x, y).forEach((t) => {
+        if (blackPieces.indexOf(t.type) >= 0) {
+          toReturn = true;
+        } else if (whitePieces.indexOf(t.type) >= 0) {
+          rtn = true;
+        }
+      })
+      if (rtn) { break }
+      let white = (piece.x % 2) + ((y + 1) % 2) == 1
+      let select = white ? whiteSelected : blackSelected
+      addSprite(piece.x, y, select);
     }
   }
 }
@@ -570,7 +697,7 @@ onInput("d", () => {
   c.x += 1
 })
 
-onInput("j", () => {
+onInput("k", () => {
   if (!selected) {
     let onPiece = false
     getTile(c.x, c.y).forEach((t) => {
@@ -605,12 +732,19 @@ onInput("j", () => {
       getAll(whiteSelected).forEach((t) => t.remove())
       getAll(blackSelected).forEach((t) => t.remove())
       getFirst(cursorSelected).remove()
+
+      getTile(piece.x, piece.y).forEach((t) => {
+        if (blackPieces.indexOf(t.type) >= 0) {
+          t.remove()
+        }
+      })
+      
       selected = false
     }
   }
 })
 
-onInput("k", () => {
+onInput("l", () => {
   if (selected) {
     getAll(whiteSelected).forEach((t) => t.remove())
     getAll(blackSelected).forEach((t) => t.remove())
